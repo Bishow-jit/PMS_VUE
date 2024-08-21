@@ -55,10 +55,9 @@
 </template>
 
 <script setup>
-import UserService from '@/Service/userService';
+
 import { computed, ref } from 'vue';
-
-
+import UserService from '@/Service/userService';
 const form = ref({
   username:'',
   password:''
@@ -71,8 +70,8 @@ const isValidForm = computed(()=>{
   return form.value.username && form.value.password;
 })
 
-async function login(){
-  try {
+async function login() {
+      try {
         console.log('Login submitted:', this.form);
 
         const userData = {
@@ -83,12 +82,13 @@ async function login(){
 
         const response = await UserService.userLogin(userData);
         console.log("Login successful:", response);
+
       } catch (error) {
         console.error("Login failed:", error);
-      
       }
     }
-
+  
+  
 // function saveLoginInfo(data){
 //   return response = UserService.userLogin(data);
 // }
