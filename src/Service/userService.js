@@ -2,21 +2,27 @@ import axios from "axios";
 
 class UserService {
   constructor() {
-    this.baseurl = process.env.VUE_APP_ROOT_API; 
+    this.baseurl =  import.meta.env.VITE_BASEURL; 
   }
 
-  async userLogin(userData) { 
+  async userLogin(userData) {  
     try {
-      console.log('URL:', this.baseurl);
       const response = await axios.post(`${this.baseurl}/login`, userData);
-      console.log('Response:', response);
       return response;
     } catch (error) {
       console.error("Login error:", error);
       throw error; 
     }
   }
+
+  async userRegister(data){
+    try {
+      const response = await axios.post(`${this.baseurl}/registration`,data);
+      return response;
+    } catch (error) {
+      console.error("Registration Failed",error);
+    }
+  }
 }
 
-
-export default UserService;
+export default new UserService();

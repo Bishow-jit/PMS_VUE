@@ -57,7 +57,11 @@
 <script setup>
 
 import { computed, ref } from 'vue';
-import UserService from '@/Service/userService';
+import UserService from '@/Service/UserService';
+import { toast } from 'vue3-toastify';
+import 'vue3-toastify/dist/index.css'
+import router from '@/router';
+
 const form = ref({
   username:'',
   password:''
@@ -72,59 +76,26 @@ const isValidForm = computed(()=>{
 
 async function login() {
       try {
-        console.log('Login submitted:', this.form);
-
         const userData = {
           username: this.form.username,
           password: this.form.password
         };
-        console.log("UserData:", userData);
-
         const response = await UserService.userLogin(userData);
-        console.log("Login successful:", response);
-
+        console.log("Login successful:", response.data);
+        if(response.data && response.data.isTokenValid){
+          localStorage.setItem('token', response.data.accessToken)
+          await router.push('/dashboard')
+          toast.success(response.data.message,{
+              autoClose: 3000,
+              theme:'dark'
+            })
+        }
       } catch (error) {
         console.error("Login failed:", error);
       }
     }
   
-  
-// function saveLoginInfo(data){
-//   return response = UserService.userLogin(data);
-// }
 
-// export default {
-//     data() {
-//     return {
-//       form: {
-//         username: '',
-//         password: ''
-//       },
-//       touched: {
-//         username: false,
-//         password: false
-//       }
-//     };
-//   },
-//   computed: {
-//     isValidForm() {
-//       return this.form.username && this.form.password;
-//     }
-//   },
-//   methods: {
-//     login() {
-//       // Login logic here
-//       console.log('Login submitted:', this.form);
-
-//       let userdata = {
-//         'username':this.form.username,
-//         'password':this.form.password
-//       }
-//       console.log("userdata", userdata);
-
-//     }
-//   }
-// };
 </script>
 
 <style scoped>

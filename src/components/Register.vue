@@ -6,7 +6,7 @@
               <div class="card p-4">
                 <h3 class="text-center mb-4 fs-3">PROJECT MANAGEMENT SYSTEM</h3>
                 <h3 class="text-center mb-4 fs-5">USER REGISTRATION</h3>
-                <form @submit.prevent="register">
+                <form @submit.prevent="register()">
                   <div class="form-group mb-3">
                     <label for="name">Name:</label>
                     <input 
@@ -17,6 +17,7 @@
                       class="form-control" 
                       placeholder="Name" 
                       required
+                      @blur="touched.name = true"
                     />
                     <div v-if="!form.name && touched.name" class="text-danger">
                       Name is required.
@@ -33,6 +34,7 @@
                       placeholder="Email" 
                       required
                       email
+                      @blur="touched.email = true"
                     />
                     <div v-if="!form.email && touched.email" class="text-danger">
                       Email is required and must be a valid email.
@@ -48,6 +50,7 @@
                       class="form-control" 
                       placeholder="Mobile No." 
                       required
+                      @blur="touched.mobileNo = true"
                     />
                     <div v-if="!form.mobileNo && touched.mobileNo" class="text-danger">
                       Mobile number is required.
@@ -81,6 +84,7 @@
                       class="form-control" 
                       placeholder="Username" 
                       required
+                      @blur="touched.username = true"
                     />
                     <div v-if="!form.username && touched.username" class="text-danger">
                       Username is required.
@@ -96,6 +100,7 @@
                       class="form-control" 
                       placeholder="Password" 
                       required
+                      @blur="touched.password = true"
                     />
                     <div v-if="!form.password && touched.password" class="text-danger">
                       Password is required.
@@ -117,48 +122,69 @@
       </div>
     </template>
     
-    <script>
-    export default {
-        data() {
-        return {
-          form: {
-            name: '',
-            email: '',
-            mobileNo: '',
-            gender: '',
-            username: '',
-            password: ''
-          },
-          touched: {
-            name: false,
-            email: false,
-            mobileNo: false,
-            gender: false,
-            username: false,
-            password: false
+    <script setup>
+    import router from '@/router';
+    import UserService from '@/Service/UserService';
+    import { computed, ref } from 'vue';
+    import { toast } from 'vue3-toastify';
+    import 'vue3-toastify/dist/index.css'
+
+    const form = ref({
+        name: '',
+        email: '',
+        mobileNo: '',
+        gender: '',
+        username: '',
+        password: ''
+    })
+
+     const touched = ref({
+        name: false,
+        email: false,
+        mobileNo: false,
+        gender: false,
+        username: false,
+        password: false
+    })
+
+    const isValidForm = computed(()=>{
+      return (
+      form.value.name &&
+      form.value.email &&
+      form.value.mobileNo &&
+      form.value.gender &&
+      form.value.username &&
+      form.value.password)
+    })
+
+    async function register() {
+          try{
+            const userData = {
+            name : this.form.name,
+            email : this.form.email,
+            mobileNo : this.form.mobileNo,
+            gender : this.form.gender,
+            username: this.form.username,
+            password: this.form.password
           }
-        };
-      },
-      computed: {
-        isValidForm() {
-          return (
-            this.form.name &&
-            this.form.email &&
-            this.form.mobileNo &&
-            this.form.gender &&
-            this.form.username &&
-            this.form.password
-          );
+          const response = await UserService.userRegister(userData);
+          console.log('registration successful', response.data);
+
+          if(response.data.data){
+           await router.push('/login')
+            toast.success(response.data.msg,{
+              autoClose: 3000,
+              theme:'dark'
+            })
+           
+          }
+
+          }catch(error){
+            console.error("Registration failed:", error);
+          }
+         
         }
-      },
-      methods: {
-        register() {
-          // Registration logic here
-          console.log('Form submitted:', this.form);
-        }
-      }
-    
-    };
+  
     </script>
     
     <style scoped>
