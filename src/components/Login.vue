@@ -86,7 +86,7 @@ async function login() {
           localStorage.setItem('token', response.data.accessToken)
           await router.push('/dashboard')
           toast.success(response.data.message,{
-              autoClose: 3000,
+              autoClose: 2000,
               theme:'dark'
             })
         }
